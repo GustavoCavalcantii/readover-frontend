@@ -125,7 +125,7 @@ const Profile: React.FC = () => {
     e.preventDefault();
 
     const filteredData = Object.fromEntries(
-      Object.entries(data).filter(([key, value]) => value !== "")
+      Object.entries(data).filter(([value]) => value !== "")
     );
 
     if (Object.keys(filteredData).length === 0) {
