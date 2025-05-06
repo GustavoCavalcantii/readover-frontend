@@ -25,7 +25,7 @@ const Home: React.FC = () => {
         </Style.HeroContent>
       </Style.HeroSection>
 
-      <Style.AboutSection id="about">
+      <Style.AboutSection id="about-us">
         <Style.AboutHeader>
           <h1>About Us</h1>
         </Style.AboutHeader>
