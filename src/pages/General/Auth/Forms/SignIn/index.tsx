@@ -2,7 +2,7 @@ import React from "react";
 import { RightPanel, RoleButtons } from "./styles";
 import { ButtonComponent } from "../../../../../components/Button";
 import { InputComponent } from "../../../../../components/TextInput";
-import { FaRegEnvelope, FaRegUser } from "react-icons/fa";
+import { FaRegEnvelope } from "react-icons/fa";
 import { MdLockOutline } from "react-icons/md";
 import { SignInProps } from "../../../../../types/layouts/layout";
 
