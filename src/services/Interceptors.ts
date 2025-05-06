@@ -30,10 +30,9 @@ export function SetupInterceptors(api: AxiosInstance) {
 
   const GetToken = async (): Promise<string | null> => {
     try {
-      const response = await api.post(refreshUrl, null, {
+      const response = await api.post(refreshUrl, {}, {
         headers: {
           noAuth: "true",
-          Authorization: "",
         },
       });
 
@@ -44,8 +43,10 @@ export function SetupInterceptors(api: AxiosInstance) {
         return token;
       }
 
+      console.warn("Nenhum token retornado do endpoint de refresh.");
       return null;
     } catch (error) {
+      console.error("Erro ao renovar token:", error);
       return null;
     }
   };
@@ -72,12 +73,19 @@ export function SetupInterceptors(api: AxiosInstance) {
     async (error: AxiosError) => {
       const originalRequest = error.config as CustomAxiosRequestConfig;
 
+      console.log("Erro capturado no interceptor:", error.response?.status);
+
       const isUnauthorized =
         error.response?.status === 401 &&
         !originalRequest._retry &&
         originalRequest.headers?.noAuth !== "true";
 
+      console.log("isUnauthorized?", isUnauthorized);
+      console.log("originalRequest._retry:", originalRequest._retry);
+      console.log("noAuth header:", originalRequest.headers?.noAuth);
+
       if (isUnauthorized) {
+        console.log("Tentando renovar o token...");
         if (isRefreshing) {
           return new Promise((resolve, reject) => {
             failedQueue.push({
@@ -110,7 +118,6 @@ export function SetupInterceptors(api: AxiosInstance) {
             processQueue(new Error("Falha ao renovar token"), null);
             if (typeof window !== "undefined") {
               AuthService.clearAllAuthData();
-              window.location.href = loginUrl;
             }
             return Promise.reject(error);
           }
@@ -118,7 +125,6 @@ export function SetupInterceptors(api: AxiosInstance) {
           processQueue(err, null);
           if (typeof window !== "undefined") {
             AuthService.clearAllAuthData();
-            window.location.href = loginUrl;
           }
           return Promise.reject(err);
         } finally {
@@ -127,7 +133,7 @@ export function SetupInterceptors(api: AxiosInstance) {
       }
 
       if (error.response?.status === 500) {
-        //console.error("Erro interno no servidor: ", error.response.data);
+        console.error("Erro interno no servidor:", error.response.data);
       }
 
       return Promise.reject(error);
