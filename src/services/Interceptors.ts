@@ -1,5 +1,6 @@
 import { AxiosError, AxiosInstance, AxiosRequestConfig } from "axios";
 import { AuthService } from "../utils/auth";
+import { useNavigate } from "react-router-dom";
 
 const refreshUrl = "/refresh";
 const loginUrl = "/auth";
@@ -10,6 +11,8 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 
 export function SetupInterceptors(api: AxiosInstance) {
   api.defaults.withCredentials = true;
+
+  const navigate = useNavigate();
 
   let isRefreshing = false;
   let failedQueue: {
@@ -30,11 +33,15 @@ export function SetupInterceptors(api: AxiosInstance) {
 
   const GetToken = async (): Promise<string | null> => {
     try {
-      const response = await api.post(refreshUrl, {}, {
-        headers: {
-          noAuth: "true",
-        },
-      });
+      const response = await api.post(
+        refreshUrl,
+        {},
+        {
+          headers: {
+            noAuth: "true",
+          },
+        }
+      );
 
       const token = response.data?.data?.token || null;
 
@@ -73,16 +80,10 @@ export function SetupInterceptors(api: AxiosInstance) {
     async (error: AxiosError) => {
       const originalRequest = error.config as CustomAxiosRequestConfig;
 
-      console.log("Erro capturado no interceptor:", error.response?.status);
-
       const isUnauthorized =
         error.response?.status === 401 &&
         !originalRequest._retry &&
         originalRequest.headers?.noAuth !== "true";
-
-      console.log("isUnauthorized?", isUnauthorized);
-      console.log("originalRequest._retry:", originalRequest._retry);
-      console.log("noAuth header:", originalRequest.headers?.noAuth);
 
       if (isUnauthorized) {
         console.log("Tentando renovar o token...");
@@ -118,6 +119,7 @@ export function SetupInterceptors(api: AxiosInstance) {
             processQueue(new Error("Falha ao renovar token"), null);
             if (typeof window !== "undefined") {
               AuthService.clearAllAuthData();
+              navigate(loginUrl);
             }
             return Promise.reject(error);
           }
@@ -125,6 +127,7 @@ export function SetupInterceptors(api: AxiosInstance) {
           processQueue(err, null);
           if (typeof window !== "undefined") {
             AuthService.clearAllAuthData();
+            navigate(loginUrl);
           }
           return Promise.reject(err);
         } finally {
