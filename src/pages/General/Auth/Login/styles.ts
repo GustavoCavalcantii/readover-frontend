@@ -12,7 +12,9 @@ export const Paragraph = styled.p`
 `;
 
 export const Container = styled.div<ContainerProps>`
-  height: 100%;
+  @media (min-width: 700px) {
+    height: 100%;
+  }
 
   position: relative;
 

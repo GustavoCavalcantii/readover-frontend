@@ -42,7 +42,7 @@ export const Container = styled.div`
 
 export const Genders = styled.div`
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 2 colunas sempre */
+  grid-template-columns: repeat(2, 1fr); 
   gap: 0.5rem;
   margin-top: 0.5rem;
   padding: 0.25rem;

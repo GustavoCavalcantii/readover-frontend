@@ -62,11 +62,12 @@ const DeliveryTime: React.FC = () => {
     const filtered = loans.filter(
       (loan) =>
         (!selectedStatus || loan.status === selectedStatus) &&
+        typeof loan.title === 'string' &&
         loan.title.toLowerCase().includes(search.toLowerCase())
     );
     setFilteredLoans(filtered);
   }, [search, selectedStatus, loans]);
-
+  
   useEffect(() => {
     const initialSearch = searchParams.get("search") || "";
     const initialStatus = searchParams.get("status") || "pending";
