@@ -12,8 +12,6 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 export function SetupInterceptors(api: AxiosInstance) {
   api.defaults.withCredentials = true;
 
-  const navigate = useNavigate();
-
   let isRefreshing = false;
   let failedQueue: {
     resolve: (value?: unknown) => void;
@@ -119,7 +117,7 @@ export function SetupInterceptors(api: AxiosInstance) {
             processQueue(new Error("Falha ao renovar token"), null);
             if (typeof window !== "undefined") {
               AuthService.clearAllAuthData();
-              navigate(loginUrl);
+              window.location.href = loginUrl;
             }
             return Promise.reject(error);
           }
@@ -127,7 +125,7 @@ export function SetupInterceptors(api: AxiosInstance) {
           processQueue(err, null);
           if (typeof window !== "undefined") {
             AuthService.clearAllAuthData();
-            navigate(loginUrl);
+            window.location.href = loginUrl;
           }
           return Promise.reject(err);
         } finally {
