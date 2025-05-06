@@ -14,6 +14,17 @@ const isAuthenticated = (): boolean => {
   return !!AuthService.getAccessToken();
 };
 
+const PrivateGeneralRoute: React.FC = () => {
+  const location = useLocation();
+
+  if (!isAuthenticated()) {
+    return <Navigate to="/auth" state={{ from: location }} replace />;
+  }
+
+  return <Outlet />;
+};
+
+
 const AdminRoute: React.FC = () => {
   const location = useLocation();
   const role = getUserRole();
@@ -60,4 +71,4 @@ const PublicRoute: React.FC = () => {
   return <Outlet />;
 };
 
-export { AdminRoute, UserRoute, PublicRoute, TokenRequire };
+export { AdminRoute, UserRoute, PublicRoute, TokenRequire, PrivateGeneralRoute };
